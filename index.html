@@ -1,0 +1,920 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Acrilys — Portfólio de POCs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  /* Acrilys graphite + red brand mapped onto shared variable names */
+  --navy-950:#13151a; --navy-900:#1b1e25; --navy-800:#242832; --navy-700:#323845;
+  --navy-600:#434b5b; --blue-500:#5a6577; --blue-400:#7c8696; --blue-300:#aab2bf;
+  --green:#ed2e2e; --green-600:#c41f1f; --green-200:#f6c9c6;
+  --warn:#f5a524; --danger:#ed2e2e; --ok:#1fae6a;
+  --bg:#eef0f3; --card:#ffffff; --ink:#181b21; --muted:#646b78; --line:#e5e8ed;
+  --ring:rgba(237,46,46,.4);
+  --shadow:0 10px 30px -12px rgba(19,21,26,.32);
+  --shadow-sm:0 4px 14px -8px rgba(19,21,26,.28);
+  --brand:#ed2e2e;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:'Inter',system-ui,-apple-system,Roboto,Arial,sans-serif;color:var(--ink);
+  background:
+    radial-gradient(900px 500px at 100% -5%,rgba(237,46,46,.10),transparent 60%),
+    radial-gradient(800px 600px at -10% 110%,rgba(67,75,91,.16),transparent 55%),
+    var(--bg);
+  min-height:100vh;
+}
+a{color:inherit;text-decoration:none}
+.app{display:flex;min-height:100vh}
+h1,h2,h3,h4,.val,.brand b{font-family:'Manrope','Inter',sans-serif}
+
+/* Sidebar */
+.side{width:288px;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto;
+  background:linear-gradient(170deg,var(--navy-950),var(--navy-800) 60%,var(--navy-700));
+  color:#cdd2db;border-right:1px solid rgba(255,255,255,.06);}
+.side::-webkit-scrollbar{width:7px}.side::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:8px}
+.brand{padding:24px 22px 12px}
+.logo{display:block}
+.logo svg{width:100%;max-width:188px;height:auto;display:block}
+.brandsub{padding:8px 22px 14px;color:#9aa3b1;font-size:11px;line-height:1.4;border-bottom:1px solid rgba(255,255,255,.10)}
+.navgroup{padding:8px 16px 2px}
+.navgroup h4{margin:14px 0 8px;padding:0 10px;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:#828b9a;font-weight:700}
+.nav a{display:flex;gap:11px;align-items:center;padding:10px 12px;border-radius:11px;font-size:13.5px;
+  color:#bcc4d0;cursor:pointer;transition:.18s ease;position:relative;font-weight:500;}
+.nav a .ico{width:22px;text-align:center;font-size:15px}
+.nav a:hover{background:rgba(255,255,255,.07);color:#fff;transform:translateX(2px)}
+.nav a.active{background:linear-gradient(90deg,rgba(237,46,46,.24),rgba(237,46,46,.05));
+  color:#fff;font-weight:700;box-shadow:inset 0 0 0 1px rgba(237,46,46,.34);}
+.nav a.active::before{content:"";position:absolute;left:-16px;top:8px;bottom:8px;width:4px;border-radius:0 4px 4px 0;background:var(--green)}
+.side .foot{padding:18px 22px 26px;color:#828b9a;font-size:11px;line-height:1.5}
+
+/* Main */
+.main{flex:1;min-width:0}
+.topbar{backdrop-filter:saturate(160%) blur(10px);background:rgba(255,255,255,.8);border-bottom:1px solid var(--line);
+  padding:15px 34px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:30;}
+.topbar .crumb{font-size:11.5px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;font-weight:600}
+.topbar h2{margin:3px 0 0;font-size:20px;letter-spacing:-.3px}
+.pill{font-size:11px;padding:6px 13px;border-radius:999px;font-weight:700}
+.tag-poc{background:linear-gradient(135deg,rgba(237,46,46,.18),rgba(237,46,46,.07));color:#c41f1f;box-shadow:inset 0 0 0 1px rgba(237,46,46,.32)}
+.content{padding:30px 34px 70px;max-width:1220px;animation:fade .4s ease}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.lead{color:var(--muted);font-size:14.5px;max-width:840px;line-height:1.6;margin:0 0 24px}
+.lead b{color:var(--navy-700)}
+.dashtag{display:inline-block;font-size:11px;font-weight:700;color:#c41f1f;background:rgba(237,46,46,.12);padding:4px 11px;border-radius:999px;margin-bottom:10px;letter-spacing:.04em}
+
+/* grid / cards */
+.grid{display:grid;gap:18px}
+.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:980px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow-sm);transition:transform .2s,box-shadow .2s;}
+.card:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.card h3{margin:0 0 4px;font-size:14.5px;letter-spacing:-.2px}
+.card .sub{color:var(--muted);font-size:12px;margin-bottom:14px}
+.kpi{position:relative;overflow:hidden;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px 20px;box-shadow:var(--shadow-sm);transition:.2s;}
+.kpi:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.kpi .lab{font-size:12px;color:var(--muted);font-weight:500}
+.kpi .val{font-size:28px;font-weight:800;letter-spacing:-1px;margin-top:4px;background:linear-gradient(120deg,var(--navy-800),var(--green));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.kpi .delta{font-size:12px;font-weight:700;margin-top:5px}
+.up{color:var(--ok)}.down{color:var(--danger)}.flat{color:var(--muted)}
+.bar-top{height:4px;border-radius:6px;margin:-20px -20px 16px;background:linear-gradient(90deg,var(--green),var(--navy-600))}
+canvas{max-width:100%}
+.chartbox{height:262px;position:relative}.chartbox.sm{height:202px}.chartbox.lg{height:300px}
+
+/* table */
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:10px;border-bottom:1px solid var(--line)}
+th{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+tbody tr{transition:.15s}tbody tr:hover{background:#f6f7f9}
+.badge{font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px;display:inline-block}
+.b-ok{background:#e4f6ec;color:#0f7a45}.b-warn{background:#fdf0db;color:#b9770a}.b-bad{background:#fdeaea;color:#c41f1f}.b-info{background:#eceef3;color:#434b5b}
+
+/* innovative components */
+.gauge{position:relative;width:180px;height:180px;margin:0 auto}
+.gauge .lbl{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.gauge .lbl b{font-family:'Manrope';font-size:32px;line-height:1;background:linear-gradient(120deg,var(--green-600),var(--navy-700));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.gauge .lbl span{font-size:11px;color:var(--muted);margin-top:4px}
+.rings{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+@media(max-width:780px){.rings{grid-template-columns:repeat(2,1fr)}}
+.ring{text-align:center}
+.ring .circ{width:118px;height:118px;border-radius:50%;margin:0 auto;display:grid;place-items:center;position:relative}
+.ring .circ::before{content:"";position:absolute;inset:11px;border-radius:50%;background:var(--card)}
+.ring .circ b{position:relative;font-family:'Manrope';font-size:22px}
+.ring .nm{font-size:12px;color:var(--muted);margin-top:10px;font-weight:600}
+.ring .dl{font-size:11px;font-weight:700;margin-top:2px}
+.heat{display:grid;gap:6px;font-size:12px}
+.heat .hrow{display:grid;grid-template-columns:150px repeat(5,1fr);gap:6px;align-items:center}
+.heat .hh{font-size:10px;color:var(--muted);font-weight:700;text-align:center;text-transform:uppercase;letter-spacing:.02em}
+.heat .hl{font-size:12px;font-weight:600;color:var(--navy-700)}
+.cell{height:42px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;transition:transform .15s}
+.cell:hover{transform:scale(1.08);box-shadow:var(--shadow)}
+.c0{background:#e5e8ed;color:var(--muted)}
+.c1{background:#1fae6a}.c2{background:#7c8696}.c3{background:#f5a524}.c4{background:#ed2e2e}
+.heatleg{display:flex;gap:14px;margin-top:14px;font-size:11px;color:var(--muted);flex-wrap:wrap}
+.sw{display:inline-block;width:12px;height:12px;border-radius:4px;margin-right:5px;vertical-align:middle}
+.kanban{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+@media(max-width:980px){.kanban{grid-template-columns:1fr 1fr}}
+.kcol{background:#f3f4f7;border:1px solid var(--line);border-radius:14px;padding:12px;min-height:240px}
+.kcol .kh{display:flex;align-items:center;justify-content:space-between;font-size:11.5px;font-weight:700;margin-bottom:10px;color:var(--navy-700)}
+.kcol .kh .cnt{background:#fff;border:1px solid var(--line);border-radius:999px;padding:1px 9px;font-size:11px}
+.kdot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px}
+.kcard{background:#fff;border:1px solid var(--line);border-radius:11px;padding:11px;margin-bottom:9px;box-shadow:var(--shadow-sm);border-left:3px solid var(--blue-400)}
+.kcard.cr{border-left-color:var(--danger)}.kcard.wn{border-left-color:var(--warn)}.kcard.ok{border-left-color:var(--ok)}
+.kcard .kt{font-size:12px;font-weight:700}
+.kcard .km{font-size:10.5px;color:var(--muted);margin-top:3px}
+.kcard .kf{display:flex;align-items:center;justify-content:space-between;margin-top:8px;font-size:10px;color:var(--muted)}
+.av{width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,var(--navy-600),var(--navy-800));color:#fff;font-size:9px;display:flex;align-items:center;justify-content:center;font-weight:700}
+.funnel{display:flex;flex-direction:column;align-items:center;gap:7px;padding:6px 0}
+.fstage{color:#fff;border-radius:10px;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;font-weight:700;box-shadow:var(--shadow-sm);transition:transform .15s}
+.fstage:hover{transform:scale(1.02)}
+.fstage small{font-weight:500;opacity:.9;font-size:11px}
+.fstage b{font-family:'Manrope';font-size:16px}
+.dealcard{display:flex;align-items:center;gap:11px;padding:10px 0;border-bottom:1px solid var(--line)}
+.dealcard .di{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,rgba(237,46,46,.14),rgba(67,75,91,.18));display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.dealcard .dn{font-size:13px;font-weight:600}.dealcard .ds{font-size:11px;color:var(--muted)}
+.dealcard .dv{margin-left:auto;font-family:'Manrope';font-weight:700;color:var(--navy-700);font-size:14px}
+.twin{position:relative;background:linear-gradient(160deg,#13151a,#323845);border-radius:16px;height:330px;overflow:hidden}
+.twin .grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px);background-size:28px 28px}
+.hot{position:absolute;transform:translate(-50%,-50%);cursor:pointer}
+.hot .pin{width:18px;height:18px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 4px rgba(255,255,255,.12)}
+.hot .pin.cr{background:var(--danger);animation:pulse 1.6s infinite}
+.hot .pin.wn{background:var(--warn)}.hot .pin.ok{background:var(--ok)}.hot .pin.hq{background:var(--green)}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(237,46,46,.6)}70%{box-shadow:0 0 0 14px rgba(237,46,46,0)}100%{box-shadow:0 0 0 0 rgba(237,46,46,0)}}
+.hot .tip{position:absolute;left:24px;top:-8px;background:rgba(255,255,255,.96);border-radius:8px;padding:5px 9px;font-size:10.5px;white-space:nowrap;color:var(--navy-800);font-weight:600;box-shadow:var(--shadow)}
+.twin .lbl-eq{position:absolute;color:#c4ccd6;font-size:10px;font-weight:600}
+.twinleg{display:flex;gap:16px;margin-top:12px;font-size:11px;color:var(--muted);flex-wrap:wrap}
+.spark{display:flex;align-items:flex-end;gap:3px;height:36px}
+.spark i{flex:1;background:linear-gradient(180deg,var(--navy-600),var(--blue-400));border-radius:3px 3px 0 0;min-height:3px}
+.scoretab td{vertical-align:middle}
+.trend-up{color:var(--ok);font-weight:700}.trend-dn{color:var(--danger);font-weight:700}
+
+/* app showcases */
+.applay{display:grid;grid-template-columns:300px 1fr;gap:24px;align-items:start}
+@media(max-width:900px){.applay{grid-template-columns:1fr}}
+.maplbl{font-size:10px;fill:#c4ccd6;font-weight:600}
+.fmap{position:relative;height:330px;border-radius:14px;overflow:hidden;background:linear-gradient(160deg,#13151a,#323845)}
+.syncrow{display:flex;gap:10px;flex-wrap:wrap}
+.syncpill{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:9px 14px;font-size:12px;font-weight:600;box-shadow:var(--shadow-sm)}
+.syncpill .d{width:9px;height:9px;border-radius:50%}
+.statrow{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}
+.statrow b{font-family:'Manrope';font-size:18px}
+.statrow .sd{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:8px}
+.tline{position:relative;margin:30px 14px 10px;height:60px}
+.tline .base{height:4px;background:var(--line);border-radius:4px;position:absolute;left:0;right:0;top:7px}
+.tline .fillb{height:4px;border-radius:4px;position:absolute;left:0;top:7px;background:linear-gradient(90deg,var(--danger),var(--warn),var(--ok))}
+.tnode{position:absolute;top:-1px;transform:translateX(-50%);text-align:center;width:88px}
+.tnode .pin{width:18px;height:18px;border-radius:50%;border:3px solid #fff;margin:0 auto;box-shadow:var(--shadow-sm)}
+.tnode .dd{font-size:11px;font-weight:700;margin-top:6px}
+.tnode .cap{font-size:9.5px;color:var(--muted);margin-top:1px;font-weight:600;line-height:1.15}
+.stepper{display:flex;align-items:flex-start;margin:10px 0 4px}
+.snode{flex:1;text-align:center;position:relative}
+.snode .cir{width:34px;height:34px;border-radius:50%;margin:0 auto;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:13px;position:relative;z-index:2}
+.snode .cir.done{background:var(--ok)}.snode .cir.act{background:var(--green);box-shadow:0 0 0 5px rgba(237,46,46,.18)}.snode .cir.pend{background:#c5cad3}
+.snode .stx{font-size:10.5px;margin-top:8px;color:var(--navy-700);font-weight:700;line-height:1.2}
+.snode .ssub{font-size:10px;color:var(--muted);margin-top:1px}
+.snode::before{content:"";position:absolute;top:17px;left:-50%;width:100%;height:3px;background:var(--line);z-index:1}
+.snode:first-child::before{display:none}
+.snode.fdone::before{background:var(--ok)}
+.xpwrap{display:flex;align-items:center;gap:12px}
+.lvl{width:46px;height:46px;border-radius:13px;background:linear-gradient(135deg,var(--green),var(--green-600));color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;box-shadow:var(--shadow-sm)}
+.lvl b{font-family:'Manrope';font-size:17px;line-height:1}.lvl span{font-size:8px;letter-spacing:.08em}
+.xpbar{height:12px;border-radius:999px;background:#e5e8ed;overflow:hidden;margin:7px 0 4px}
+.xpbar i{display:block;height:100%;background:linear-gradient(90deg,var(--green),var(--navy-600))}
+.streak{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.streak i{width:21px;height:21px;border-radius:5px;background:#e5e8ed}
+.streak i.on{background:linear-gradient(135deg,var(--green),var(--green-600))}
+.streak i.today{outline:2px solid var(--navy-600);outline-offset:1px}
+.badgewall{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:4px}
+.bdg{text-align:center;background:#f3f4f7;border:1px solid var(--line);border-radius:12px;padding:11px 6px}
+.bdg .ic{font-size:22px}.bdg .bn{font-size:9.5px;color:var(--muted);margin-top:5px;font-weight:600;line-height:1.15}
+.bdg.lock{opacity:.4;filter:grayscale(1)}
+.leader .lr{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:12.5px}
+.leader .rk{width:23px;height:23px;border-radius:50%;background:var(--navy-700);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.leader .rk.g{background:linear-gradient(135deg,#f5a524,#e08600)}
+.leader .lr.me{font-weight:700;color:var(--navy-700)}
+.leader .lr .pts{margin-left:auto;font-weight:700;color:var(--muted)}
+.detview{position:relative;border-radius:14px;overflow:hidden;background:linear-gradient(135deg,#13151a,#2c313c);height:300px}
+.detview .gridb{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:30px 30px}
+.bbox{position:absolute;border:2px solid;border-radius:6px}
+.bbox .bl{position:absolute;top:-19px;left:-2px;font-size:10px;font-weight:700;padding:1px 6px;border-radius:5px;color:#fff;white-space:nowrap}
+.confrow{display:flex;align-items:center;gap:11px;margin-bottom:11px}
+.confrow .cn{font-size:12px;width:160px;font-weight:600}
+.confbar{flex:1;height:9px;border-radius:9px;background:#e5e8ed;overflow:hidden}
+.confbar i{display:block;height:100%;border-radius:9px}
+.confrow .cv{font-size:11px;font-weight:700;width:46px;text-align:right}
+.pipe{display:flex;align-items:center;flex-wrap:wrap}
+.pstep{flex:1;text-align:center;background:#f3f4f7;border:1px solid var(--line);border-radius:11px;padding:10px 6px;min-width:84px}
+.pstep .pi{font-size:17px}.pstep .pn{font-size:10px;font-weight:700;margin-top:3px;color:var(--navy-700)}
+.parr{color:var(--green);font-weight:800;padding:0 6px}
+
+/* phone mockups */
+.phones{display:flex;flex-wrap:wrap;gap:28px}
+.phone{width:300px;flex-shrink:0;border-radius:40px;padding:11px;background:linear-gradient(160deg,#13151a,#242832);
+  box-shadow:0 30px 60px -22px rgba(10,12,16,.6),inset 0 0 0 1px rgba(255,255,255,.06);position:relative;}
+.phone::before{content:"";position:absolute;top:18px;left:50%;transform:translateX(-50%);width:96px;height:22px;background:#0d0f13;border-radius:0 0 14px 14px;z-index:5}
+.phone .screen{background:#eef0f3;border-radius:30px;overflow:hidden;height:600px;display:flex;flex-direction:column}
+.ph-status{height:30px;background:linear-gradient(135deg,var(--navy-800),var(--navy-600));color:#fff;font-size:10px;display:flex;align-items:center;justify-content:space-between;padding:0 18px}
+.ph-head{background:linear-gradient(135deg,var(--navy-800),var(--navy-600));color:#fff;padding:8px 18px 16px;position:relative}
+.ph-head::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:16px;background:#eef0f3;border-radius:16px 16px 0 0}
+.ph-head .t{font-size:15px;font-weight:700;font-family:'Manrope'}
+.ph-head .s{font-size:11px;color:var(--green-200);margin-top:2px}
+.ph-body{flex:1;overflow-y:auto;padding:14px 14px 18px;background:#eef0f3}
+.ph-body::-webkit-scrollbar{width:0}
+.ph-nav{height:58px;background:#fff;border-top:1px solid var(--line);display:flex;box-shadow:0 -4px 14px -8px rgba(19,21,26,.18)}
+.ph-nav div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:9px;color:var(--muted);gap:3px;font-weight:600}
+.ph-nav div.on{color:var(--green)}
+.ph-nav .d{font-size:17px}
+.mini{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 13px;margin-bottom:11px;box-shadow:var(--shadow-sm)}
+.mini .mt{font-size:13px;font-weight:600}
+.mini .ms{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4}
+.row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.chk{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:12.5px}
+.box{width:19px;height:19px;border-radius:6px;border:2px solid var(--blue-300);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff}
+.box.c{background:var(--ok);border-color:var(--ok)}.box.x{background:var(--danger);border-color:var(--danger)}
+.btn{display:inline-block;background:linear-gradient(135deg,var(--navy-700),var(--navy-600));color:#fff;border-radius:11px;padding:10px 15px;font-size:12.5px;font-weight:700;text-align:center;box-shadow:0 8px 18px -10px rgba(50,56,69,.8)}
+.btn.full{display:block}
+.btn.acc{background:linear-gradient(135deg,var(--green),var(--green-600));color:#fff;box-shadow:0 8px 18px -10px rgba(237,46,46,.8)}
+.progress{height:9px;border-radius:9px;background:#e5e8ed;overflow:hidden}
+.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--green),var(--navy-600));border-radius:9px}
+.note{font-size:12.5px;color:var(--muted);line-height:1.55}
+.callout{background:linear-gradient(135deg,rgba(237,46,46,.07),rgba(67,75,91,.08));border:1px solid var(--line);border-left:4px solid var(--green);border-radius:12px;padding:12px 15px;font-size:13px;color:var(--navy-700);margin:6px 0 18px;line-height:1.5}
+.feat{display:flex;gap:11px;align-items:flex-start;font-size:13px;margin-bottom:11px;line-height:1.5}
+.feat .fi{width:30px;height:30px;border-radius:10px;background:linear-gradient(135deg,rgba(237,46,46,.14),rgba(67,75,91,.18));color:var(--navy-700);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px}
+
+/* power platform flow */
+.flow{display:flex;align-items:stretch;gap:0;flex-wrap:wrap}
+.step{background:linear-gradient(180deg,#fff,#f6f7f9);border:1px solid var(--line);border-radius:14px;padding:14px;min-width:148px;flex:1;text-align:center;box-shadow:var(--shadow-sm);transition:.2s}
+.step:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.step .si{font-size:22px}.step .sn{font-weight:700;font-size:13px;margin-top:5px;font-family:'Manrope'}.step .sd{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.35}
+.arrow{display:flex;align-items:center;justify-content:center;color:var(--green);font-size:20px;padding:0 8px;font-weight:800}
+@media(max-width:900px){.arrow{transform:rotate(90deg);padding:8px 0}}
+.archlegend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:16px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:middle}
+.disc{font-size:11px;color:var(--muted);font-style:italic;margin-top:18px}
+.stack>*+*{margin-top:18px}
+.hero{border-radius:20px;padding:26px 28px;margin-bottom:24px;color:#e9ebef;position:relative;overflow:hidden;
+  background:linear-gradient(135deg,var(--navy-900),var(--navy-700));box-shadow:var(--shadow);}
+.hero::after{content:"";position:absolute;right:-60px;top:-60px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(237,46,46,.4),transparent 65%)}
+.hero h1{color:#fff;margin:0 0 8px;font-size:24px;letter-spacing:-.4px}
+.hero p{margin:0;max-width:800px;color:#c2c8d2;font-size:14px;line-height:1.6}
+.hero .chips{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap}
+.hero .chips span{font-size:12px;font-weight:600;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16)}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand"><div class="logo">
+      <svg viewBox="0 0 200 48" xmlns="http://www.w3.org/2000/svg">
+        <text x="0" y="36" font-family="Manrope,Arial" font-weight="800" font-size="36" fill="#ffffff" letter-spacing="-1.5">Acrilys</text>
+        <circle cx="185" cy="32" r="7" fill="#ed2e2e"/>
+      </svg>
+    </div></div>
+    <div class="brandsub">Tecnologia do Plástico · Portfólio de Provas de Conceito (BI &amp; Automação)</div>
+    <div class="navgroup"><h4>Aplicativos</h4><div class="nav" id="nav-app"></div></div>
+    <div class="navgroup"><h4>Dashboards (Power BI)</h4><div class="nav" id="nav-dash"></div></div>
+    <div class="navgroup"><h4>Power Platform</h4><div class="nav" id="nav-pp"></div></div>
+    <div class="foot">Power Tech · Power BI &amp; Power Platform · Microsoft 365<br>Dados ilustrativos para demonstração.</div>
+  </aside>
+  <main class="main">
+    <div class="topbar">
+      <div><div class="crumb" id="crumb">Início</div><h2 id="title">Portfólio de POCs — Acrilys</h2></div>
+      <div><span class="pill tag-poc" id="pocflag">15 provas de conceito</span></div>
+    </div>
+    <div class="content" id="view"></div>
+  </main>
+</div>
+
+<script>
+const MES=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+const acr=['#1b1e25','#323845','#5a6577','#7c8696','#aab2bf','#ed2e2e','#c41f1f','#f6c9c6'];
+const charts=[];
+function destroyCharts(){while(charts.length){try{charts.pop().destroy()}catch(e){}}}
+function C(id,cfg){const el=document.getElementById(id);if(!el)return;const c=new Chart(el,cfg);charts.push(c);return c;}
+Chart.defaults.font.family="'Inter',system-ui,sans-serif";
+Chart.defaults.color="#646b78";
+Chart.defaults.plugins.legend.labels.boxWidth=12;
+Chart.defaults.plugins.legend.labels.usePointStyle=true;
+Chart.defaults.plugins.legend.labels.font={size:11};
+
+const APPS=[
+ {id:'app1',ico:'📍',name:'Cockpit da Diretoria',crumb:'Aplicativos / Cockpit da Diretoria'},
+ {id:'app2',ico:'🏭',name:'Portal do Cliente',crumb:'Aplicativos / Portal do Cliente (montadoras)'},
+ {id:'app3',ico:'✅',name:'Chão de Fábrica',crumb:'Aplicativos / Apontamento & Aprovações'},
+ {id:'app4',ico:'🎓',name:'Acrilys Academy',crumb:'Aplicativos / Acrilys Academy'},
+ {id:'app5',ico:'🤖',name:'Inspeção com IA',crumb:'Aplicativos / Inspeção de Qualidade com IA'}];
+const DASH=[
+ {id:'dash1',ico:'🔥',name:'Produção & OEE',crumb:'Dashboards / Produção & OEE'},
+ {id:'dash2',ico:'🚚',name:'Carteira & OTD',crumb:'Dashboards / Carteira & Entregas (OTD)'},
+ {id:'dash3',ico:'🗓️',name:'PCP / Programação',crumb:'Dashboards / PCP — Programação Fabril'},
+ {id:'dash4',ico:'💰',name:'Custo & Margem',crumb:'Dashboards / Custo & Margem por Linha'},
+ {id:'dash5',ico:'📈',name:'Executivo & Qualidade',crumb:'Dashboards / Executivo & Qualidade (IATF)'}];
+const PP=[
+ {id:'pp1',ico:'📱',name:'Power Apps — Apontamento',crumb:'Power Platform / Power Apps'},
+ {id:'pp2',ico:'⚡',name:'Fechamento Fabril',crumb:'Power Platform / Power Automate (Fechamento)'},
+ {id:'pp3',ico:'🔔',name:'Alertas Produção/Qualidade',crumb:'Power Platform / Power Automate (Alertas)'},
+ {id:'pp4',ico:'📦',name:'Pedidos & OTD',crumb:'Power Platform / Power Automate (Pedidos)'},
+ {id:'pp5',ico:'💬',name:'Copiloto Industrial',crumb:'Power Platform / Copilot Studio'}];
+
+function buildNav(){
+  const m=(list,el)=>{document.getElementById(el).innerHTML=list.map(i=>`<a data-id="${i.id}"><span class="ico">${i.ico}</span>${i.name}</a>`).join('')};
+  m(APPS,'nav-app');m(DASH,'nav-dash');m(PP,'nav-pp');
+  document.querySelectorAll('.nav a').forEach(a=>a.onclick=()=>go(a.dataset.id));
+}
+function setActive(id){document.querySelectorAll('.nav a').forEach(a=>a.classList.toggle('active',a.dataset.id===id));}
+function meta(id){return [...APPS,...DASH,...PP].find(x=>x.id===id);}
+function kpi(lab,val,delta,cls){return `<div class="kpi"><div class="bar-top"></div><div class="lab">${lab}</div><div class="val">${val}</div><div class="delta ${cls}">${delta}</div></div>`;}
+function phone(title,sub,body,nav){
+  return `<div class="phone"><div class="screen">
+    <div class="ph-status"><span>09:41</span><span>📶 🔋 100%</span></div>
+    <div class="ph-head"><div class="t">${title}</div><div class="s">${sub}</div></div>
+    <div class="ph-body">${body}</div><div class="ph-nav">${nav}</div></div></div>`;
+}
+
+/* ================= APPS ================= */
+function app1(){
+ return `<span class="dashtag">EXPERIÊNCIA · Cockpit da diretoria + mapa das unidades</span>
+ <p class="lead">App da diretoria/industrial com os indicadores da fábrica no bolso e alertas, e um <b>mapa das unidades</b> (matriz e filiais no RS) com o OEE e a produção por planta. Decisão sobre injeção e vacuum forming em tempo real.</p>
+ <div class="applay">
+  ${phone('Cockpit Acrilys','Bom dia 👋 · visão da fábrica',
+    `<div class="callout" style="margin:0 0 11px">⚠️ Injetora <b>INJ-04</b> parada há 38 min — troca de molde acima do padrão</div>
+     <div class="grid g2" style="grid-template-columns:1fr 1fr;gap:10px;margin-bottom:11px">
+       <div class="kpi" style="padding:12px"><div class="lab">OEE geral</div><div class="val" style="font-size:21px">78,4%</div></div>
+       <div class="kpi" style="padding:12px"><div class="lab">Refugo</div><div class="val" style="font-size:21px;-webkit-text-fill-color:initial;background:none;color:var(--danger)">3,1%</div></div>
+     </div>
+     <div class="mini"><div class="row"><div class="mt">OTD (entrega no prazo)</div><span class="badge b-ok">96,2%</span></div><div class="ms">carteira de montadoras</div></div>
+     <div class="mini"><div class="row"><div class="mt">FPY (1ª passada)</div><span class="badge b-info">94,8%</span></div><div class="ms">IATF 16949</div></div>`,
+    `<div class="on"><span class="d">📊</span>Cockpit</div><div><span class="d">🗺️</span>Unidades</div><div><span class="d">🔔</span>Alertas</div><div><span class="d">👤</span>Perfil</div>`)}
+  <div class="stack">
+    <div class="card"><h3>Mapa das unidades · Rio Grande do Sul</h3><div class="sub">OEE por planta — passe o mouse</div>
+      <div class="fmap">
+        <svg viewBox="0 0 480 330" width="100%" height="100%" preserveAspectRatio="none" style="position:absolute;inset:0">
+          <path d="M120 80 Q230 50 320 90 Q400 120 380 200 Q350 280 250 290 Q150 300 110 230 Q80 160 120 80 Z" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.18)" stroke-width="2"/>
+          <circle cx="270" cy="150" r="11" fill="#1fae6a" stroke="#fff" stroke-width="3"/><text x="270" y="132" class="maplbl" text-anchor="middle">Matriz · Caxias do Sul</text>
+          <circle cx="245" cy="175" r="9" fill="#f5a524" stroke="#fff" stroke-width="3"/><text x="240" y="196" class="maplbl" text-anchor="middle">Un. Peças Acrílicas · Caxias</text>
+          <circle cx="210" cy="120" r="9" fill="#1fae6a" stroke="#fff" stroke-width="3"/><text x="200" y="104" class="maplbl" text-anchor="middle">Filial · S. Fco. de Paula</text>
+        </svg>
+      </div>
+      <div class="twinleg"><span><span class="sw c1"></span>OEE alto</span><span><span class="sw c3"></span>Atenção</span><span><span class="sw c4"></span>Crítico</span></div>
+    </div>
+    <div class="card"><h3>Atualização & alertas</h3><div class="sub">dados do ERP, apontamento (MES) e telemetria das máquinas</div>
+      <div class="syncrow">
+        <div class="syncpill"><span class="d" style="background:var(--ok)"></span>Dados em tempo real</div>
+        <div class="syncpill"><span class="d" style="background:var(--danger)"></span>1 máquina parada</div>
+        <div class="syncpill"><span class="d" style="background:var(--navy-600)"></span>Push no Teams ativo</div>
+      </div>
+    </div>
+  </div>
+ </div>
+ <div class="grid g3" style="margin-top:18px">
+   <div class="card"><div class="feat"><div class="fi">⚙️</div><div><b>Injeção + Vacuum forming</b><br><span class="note">5 linhas (acrílico, contentores, malas, mobiliário, peças ônibus/vans).</span></div></div></div>
+   <div class="card"><div class="feat"><div class="fi">⏱️</div><div><b>Tempo real</b><br><span class="note">OEE, refugo e OTD sem esperar o fechamento.</span></div></div></div>
+   <div class="card"><div class="feat"><div class="fi">🏅</div><div><b>IATF / ISO</b><br><span class="note">Indicadores prontos para auditoria (9001, IATF 16949, 14001).</span></div></div></div>
+ </div>`;
+}
+function app2(){
+ setTimeout(()=>{C('a2g',{type:'doughnut',data:{datasets:[{data:[96,4],backgroundColor:['#1fae6a','#e5e8ed'],borderWidth:0,circumference:270,rotation:225}]},options:{cutout:'74%',plugins:{legend:{display:false},tooltip:{enabled:false}}}});},40);
+ return `<span class="dashtag">EXPERIÊNCIA · Portal do cliente (montadoras / indústria)</span>
+ <p class="lead">Área do cliente (em Power Pages): status dos pedidos, <b>OTD e PPAP</b>, rastreio da expedição, certificados de qualidade e notas. Ao lado, um <b>cockpit</b> do volume e a <b>linha do tempo das entregas</b>. Menos e-mails de cobrança de status.</p>
+ <div class="applay">
+  ${phone('Marcopolo · Pedidos','Portal do cliente · cód. 2048',
+    `<div class="grid g2" style="grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+       <div class="kpi" style="padding:12px"><div class="lab">Pedidos abertos</div><div class="val" style="font-size:20px">12</div></div>
+       <div class="kpi" style="padding:12px"><div class="lab">OTD do trimestre</div><div class="val" style="font-size:20px;-webkit-text-fill-color:initial;background:none;color:var(--ok)">96%</div></div>
+     </div>
+     <div class="mini"><div class="row"><div class="mt">OP-5582 · Painel injetado</div><span class="badge b-info">Em produção</span></div><div class="ms">2.400 peças · prev. 2 dias · PPAP aprovado</div></div>
+     <div class="mini"><div class="row"><div class="mt">OP-5570 · Peça vacuum forming</div><span class="badge b-ok">Expedido</span></div><div class="ms">NF-e + certificado de qualidade</div></div>
+     <div class="btn acc full">📄 Baixar certificados (IATF)</div>`,
+    `<div class="on"><span class="d">📦</span>Pedidos</div><div><span class="d">🚚</span>Entregas</div><div><span class="d">📄</span>Docs</div><div><span class="d">➕</span>Cotação</div>`)}
+  <div class="stack">
+    <div class="card"><h3>Cockpit do cliente</h3><div class="sub">Marcopolo · cód. 2048</div>
+      <div style="display:flex;gap:22px;align-items:center;flex-wrap:wrap">
+        <div class="gauge"><canvas id="a2g"></canvas><div class="lbl"><b>96%</b><span>OTD</span></div></div>
+        <div style="flex:1;min-width:180px">
+          <div class="statrow"><span><span class="sd" style="background:var(--navy-600)"></span>Pedidos no trimestre</span><b>48</b></div>
+          <div class="statrow"><span><span class="sd" style="background:var(--ok)"></span>No prazo</span><b style="color:var(--ok)">46</b></div>
+          <div class="statrow"><span><span class="sd" style="background:var(--warn)"></span>Em risco</span><b>2</b></div>
+          <div class="statrow" style="border:none"><span><span class="sd" style="background:var(--green)"></span>PPAP aprovados</span><b>100%</b></div>
+        </div>
+      </div>
+    </div>
+    <div class="card"><h3>Entregas da semana · rastreio</h3><div class="sub">expedições programadas</div>
+      <div class="tline"><div class="base"></div><div class="fillb" style="width:62%"></div>
+        <div class="tnode" style="left:8%"><div class="pin" style="background:var(--ok)"></div><div class="dd">Seg</div><div class="cap">OP-5570<br>entregue</div></div>
+        <div class="tnode" style="left:34%"><div class="pin" style="background:var(--ok)"></div><div class="dd">Ter</div><div class="cap">OP-5575<br>entregue</div></div>
+        <div class="tnode" style="left:60%"><div class="pin" style="background:var(--warn)"></div><div class="dd">Qui</div><div class="cap">OP-5582<br>em produção</div></div>
+        <div class="tnode" style="left:86%"><div class="pin" style="background:var(--navy-600)"></div><div class="dd">Sex</div><div class="cap">OP-5588<br>programado</div></div>
+      </div>
+    </div>
+  </div>
+ </div>
+ <div class="callout" style="margin-top:18px">💡 Transparência de status e documentos (PPAP, certificados) reduz custo de SAC e fortalece a parceria com montadoras exigentes em pontualidade.</div>`;
+}
+function app3(){
+ return `<span class="dashtag">EXPERIÊNCIA · Chão de fábrica + jornada da OP</span>
+ <p class="lead">Apontamento de produção e aprovações no celular/tablet do chão de fábrica — apontar peças boas/refugo, parada de máquina, e aprovar setups — e a <b>jornada da Ordem de Produção</b> em etapas. Tira o apontamento do papel e dá visão do que segura a OP.</p>
+ <div class="applay">
+  ${phone('Apontamento · INJ-02','Operador · turno 1',
+    `<div class="mini"><div class="row"><div class="mt">OP-5582 · Painel injetado</div><span class="badge b-info">Produzindo</span></div><div class="ms">Molde M-118 · ciclo 42s · meta 2.400 pç</div></div>
+     <div class="grid g2" style="grid-template-columns:1fr 1fr;gap:10px;margin:0 0 11px">
+       <div class="kpi" style="padding:12px"><div class="lab">Boas</div><div class="val" style="font-size:20px;-webkit-text-fill-color:initial;background:none;color:var(--ok)">1.842</div></div>
+       <div class="kpi" style="padding:12px"><div class="lab">Refugo</div><div class="val" style="font-size:20px;-webkit-text-fill-color:initial;background:none;color:var(--danger)">61</div></div>
+     </div>
+     <div class="btn acc full" style="margin-bottom:8px">+ Apontar produção</div>
+     <div class="btn full">⏸️ Registrar parada</div>`,
+    `<div class="on"><span class="d">⏱️</span>Apontar</div><div><span class="d">📋</span>OPs</div><div><span class="d">✅</span>Aprovar</div><div><span class="d">👤</span>Perfil</div>`)}
+  <div class="stack">
+    <div class="card"><h3>Jornada da OP-5582</h3><div class="sub">do programado à expedição</div>
+      <div class="stepper">
+        <div class="snode fdone"><div class="cir done">✓</div><div class="stx">Programada</div><div class="ssub">PCP</div></div>
+        <div class="snode fdone"><div class="cir done">✓</div><div class="stx">Setup molde</div><div class="ssub">M-118</div></div>
+        <div class="snode"><div class="cir act">3</div><div class="stx">Injeção</div><div class="ssub">77%</div></div>
+        <div class="snode"><div class="cir pend">4</div><div class="stx">Inspeção</div><div class="ssub">previsto</div></div>
+        <div class="snode"><div class="cir pend">5</div><div class="stx">Expedição</div><div class="ssub">previsto</div></div>
+      </div>
+      <div class="progress" style="margin-top:16px"><i style="width:60%"></i></div>
+      <div class="note" style="margin-top:8px">1.842 de 2.400 peças · estimativa de inspeção amanhã, expedição quinta.</div>
+    </div>
+    <div class="card"><h3>O que segura a produção hoje</h3><div class="sub">paradas e pendências</div>
+      <table><thead><tr><th>Máquina</th><th>OP</th><th>Evento</th><th>Status</th></tr></thead><tbody>
+        <tr><td>INJ-04</td><td>5590</td><td>Troca de molde</td><td><span class="badge b-bad">Parada 38min</span></td></tr>
+        <tr><td>VF-01</td><td>5583</td><td>Aguardando aprovação setup</td><td><span class="badge b-warn">Aprovar</span></td></tr>
+        <tr><td>INJ-02</td><td>5582</td><td>Produzindo</td><td><span class="badge b-ok">OK</span></td></tr>
+        <tr><td>INJ-06</td><td>5586</td><td>Manutenção de molde</td><td><span class="badge b-warn">Ferramentaria</span></td></tr>
+      </tbody></table>
+    </div>
+  </div>
+ </div>`;
+}
+function app4(){
+ const days=[1,1,1,1,1,0,1,1,1,1,1,1,1,2];
+ const streak=days.map(d=>`<i class="${d===1?'on':d===2?'on today':''}"></i>`).join('');
+ return `<span class="dashtag">EXPERIÊNCIA · Capacitação gamificada</span>
+ <p class="lead">Microlearning para operadores, setup/ferramentaria, qualidade e PCP: trilhas de <b>operação de injetora, vacuum forming, IATF 16949, NR-12 e troca rápida de molde (SMED)</b>, com mecânica de jogo (XP, sequência, conquistas e ranking). Padroniza o procedimento e acelera a integração.</p>
+ <div class="applay">
+  ${phone('Acrilys Academy','Olá, Romário 👋 · 4 trilhas ativas',
+    `<div class="mini"><div class="row"><div class="mt">Operação de Injetora</div><span class="ms">74%</span></div><div class="progress" style="margin-top:7px"><i style="width:74%"></i></div></div>
+     <div class="mini"><div class="row"><div class="mt">IATF 16949 · Qualidade</div><span class="ms">48%</span></div><div class="progress" style="margin-top:7px"><i style="width:48%"></i></div></div>
+     <div class="mini"><div class="row"><div class="mt">NR-12 · Segurança em Máquinas</div><span class="ms">100%</span></div><div class="progress" style="margin-top:7px"><i style="width:100%;background:var(--ok)"></i></div></div>
+     <div class="callout" style="margin-top:4px">🔥 Sequência de 12 dias de estudo</div>`,
+    `<div class="on"><span class="d">🎓</span>Trilhas</div><div><span class="d">▶️</span>Aulas</div><div><span class="d">🏅</span>Certif.</div><div><span class="d">👤</span>Perfil</div>`)}
+  <div class="stack">
+    <div class="card"><h3>Seu progresso</h3><div class="sub">nível, XP e sequência de estudo</div>
+      <div class="xpwrap"><div class="lvl"><b>7</b><span>NÍVEL</span></div>
+        <div style="flex:1"><div class="row" style="font-size:12px;font-weight:600"><span>2.310 XP</span><span class="note">faltam 690 p/ nível 8</span></div>
+          <div class="xpbar"><i style="width:77%"></i></div></div>
+      </div>
+      <div style="font-size:12px;font-weight:600;margin-top:14px">🔥 Sequência atual — 12 dias</div>
+      <div class="streak">${streak}</div>
+    </div>
+    <div class="grid g2" style="gap:18px">
+      <div class="card"><h3>Conquistas</h3><div class="sub">8 de 12 desbloqueadas</div>
+        <div class="badgewall">
+          <div class="bdg"><div class="ic">🥇</div><div class="bn">1ª trilha</div></div>
+          <div class="bdg"><div class="ic">🔥</div><div class="bn">Sequência 7d</div></div>
+          <div class="bdg"><div class="ic">🎯</div><div class="bn">100% quiz</div></div>
+          <div class="bdg"><div class="ic">⚙️</div><div class="bn">Mestre injeção</div></div>
+          <div class="bdg"><div class="ic">⛑️</div><div class="bn">NR-12</div></div>
+          <div class="bdg"><div class="ic">⏱️</div><div class="bn">SMED</div></div>
+          <div class="bdg lock"><div class="ic">💎</div><div class="bn">Nível 10</div></div>
+          <div class="bdg lock"><div class="ic">👑</div><div class="bn">Top 1</div></div>
+        </div>
+      </div>
+      <div class="card"><h3>Ranking da equipe</h3><div class="sub">Produção · jun</div>
+        <div class="leader">
+          <div class="lr"><span class="rk g">1</span>Carla M.<span class="pts">2.880 XP</span></div>
+          <div class="lr"><span class="rk">2</span>João P.<span class="pts">2.520 XP</span></div>
+          <div class="lr me"><span class="rk">3</span>Você (Romário)<span class="pts">2.310 XP</span></div>
+          <div class="lr"><span class="rk">4</span>Bruno S.<span class="pts">2.040 XP</span></div>
+          <div class="lr"><span class="rk">5</span>Aline F.<span class="pts">1.820 XP</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+ </div>`;
+}
+function app5(){
+ return `<span class="dashtag">EXPERIÊNCIA · Inspeção visual com IA</span>
+ <p class="lead">Visão computacional inspeciona a peça injetada/conformada e <b>detecta defeitos</b> (rebarba, rechupe, bolha, mancha, falha de preenchimento) antes da expedição — reforçando a qualidade IATF e reduzindo refugo e reclamação de cliente. A equipe foca no que a IA marca.</p>
+ <div class="applay">
+  ${phone('Inspeção por IA','Peça INJ-02 · OP-5582',
+    `<div style="background:linear-gradient(135deg,#13151a,#2c313c);border-radius:14px;height:150px;position:relative;margin-bottom:12px;overflow:hidden">
+        <div style="position:absolute;top:28px;left:38px;width:66px;height:44px;border:2px solid #ed2e2e;border-radius:6px"></div>
+        <div style="position:absolute;top:16px;left:40px;font-size:10px;color:#ffb3b0">rebarba 0.93</div>
+        <div style="position:absolute;bottom:24px;right:34px;width:48px;height:34px;border:2px solid #f5a524;border-radius:6px"></div>
+        <div style="position:absolute;bottom:60px;right:34px;font-size:10px;color:#ffd79a">rechupe 0.72</div>
+        <div style="position:absolute;bottom:6px;left:10px;font-size:11px;color:#aab2bf">painel_5582.jpg</div></div>
+     <div class="mini"><div class="row"><div class="mt">🔴 Rebarba na borda</div><span class="badge b-bad">93%</span></div><div class="ms">refugo · revisar molde M-118</div></div>
+     <div class="mini"><div class="row"><div class="mt">🟠 Rechupe</div><span class="badge b-warn">72%</span></div><div class="ms">ajustar pressão/recalque</div></div>`,
+    `<div class="on"><span class="d">🤖</span>Inspeção</div><div><span class="d">🗂️</span>Fila</div><div><span class="d">📈</span>Tendência</div><div><span class="d">👤</span>Perfil</div>`)}
+  <div class="stack">
+    <div class="card"><h3>Estúdio de inspeção</h3><div class="sub">OP-5582 · painel injetado · IA Defect-Vision v3</div>
+      <div class="detview"><div class="gridb"></div>
+        <div class="bbox" style="left:13%;top:28%;width:26%;height:34%;border-color:#ed2e2e"><span class="bl" style="background:#ed2e2e">rebarba · 0.93</span></div>
+        <div class="bbox" style="left:62%;top:52%;width:20%;height:26%;border-color:#f5a524"><span class="bl" style="background:#f5a524">rechupe · 0.72</span></div>
+        <div class="bbox" style="left:44%;top:18%;width:14%;height:16%;border-color:#1fae6a"><span class="bl" style="background:#1fae6a">acabamento OK · 0.96</span></div>
+      </div>
+      <div style="margin-top:14px">
+        <div class="confrow"><span class="cn">Rebarba (refugo)</span><div class="confbar"><i style="width:93%;background:#ed2e2e"></i></div><span class="cv">93%</span></div>
+        <div class="confrow"><span class="cn">Rechupe</span><div class="confbar"><i style="width:72%;background:#f5a524"></i></div><span class="cv">72%</span></div>
+        <div class="confrow"><span class="cn">Falha de preenchimento</span><div class="confbar"><i style="width:58%;background:#f5a524"></i></div><span class="cv">58%</span></div>
+      </div>
+    </div>
+    <div class="card"><h3>Pipeline de processamento</h3><div class="sub">peças do turno · inspeção automática</div>
+      <div class="pipe">
+        <div class="pstep"><div class="pi">📷</div><div class="pn">Captura</div></div><span class="parr">➜</span>
+        <div class="pstep"><div class="pi">🧹</div><div class="pn">Normaliza</div></div><span class="parr">➜</span>
+        <div class="pstep"><div class="pi">🧠</div><div class="pn">Modelo IA</div></div><span class="parr">➜</span>
+        <div class="pstep"><div class="pi">🏷️</div><div class="pn">Classifica</div></div><span class="parr">➜</span>
+        <div class="pstep"><div class="pi">🗂️</div><div class="pn">Fila inspetor</div></div>
+      </div>
+      <div class="callout" style="margin:14px 0 0">⚡ <b>1.760 peças</b> aprovadas automaticamente · <b>82</b> sinalizadas — o inspetor foca em ~4% e protege o cliente e o índice IATF.</div>
+    </div>
+  </div>
+ </div>
+ <div class="disc">* Caixas de detecção e percentuais são ilustrativos para a demonstração do conceito.</div>`;
+}
+
+/* ================= DASH 1 — PRODUÇÃO & OEE ================= */
+function dash1(){
+ const centros=['Injeção A','Injeção B','Vacuum Forming','Acabamento','Montagem','Serigrafia'];
+ const dias=['Seg','Ter','Qua','Qui','Sex'];
+ const data=[ [1,1,2,1,1],[2,1,2,3,2],[1,2,1,1,1],[2,2,3,2,2],[1,1,2,1,2],[2,3,2,2,1] ];
+ const cls=['c0','c1','c2','c3','c4'];
+ let rows=`<div class="hrow"><div></div>${dias.map(n=>`<div class="hh">${n}</div>`).join('')}</div>`;
+ centros.forEach((p,i)=>{rows+=`<div class="hrow"><div class="hl">${p}</div>${data[i].map(v=>{const pct=['—','86','78','69','58'][v];return `<div class="cell ${cls[v]}">${pct}%</div>`;}).join('')}</div>`;});
+ setTimeout(()=>{
+  C('d1g',{type:'doughnut',data:{datasets:[{data:[78.4,21.6],backgroundColor:['#1fae6a','#e5e8ed'],borderWidth:0,circumference:270,rotation:225}]},options:{cutout:'74%',plugins:{legend:{display:false},tooltip:{enabled:false}}}});
+  C('d1t',{type:'bar',data:{labels:['Disponib.','Performance','Qualidade','OEE'],datasets:[{label:'%',data:[88,91,97,78.4],backgroundColor:['#5a6577','#7c8696','#1fae6a','#ed2e2e'],borderRadius:5}]},options:{plugins:{legend:{display:false}},scales:{y:{max:100},x:{grid:{display:false}}}}});
+ },40);
+ return `<span class="dashtag">VISUALIZAÇÃO · Heatmap de OEE por centro</span>
+  <p class="lead">OEE (eficiência global dos equipamentos) <b>atualizado em tempo real</b>, com mapa de calor por centro de trabalho e dia, fator Disponibilidade × Performance × Qualidade e medidor global. Vê onde a fábrica perde rendimento e onde agir.</p>
+  <div class="grid" style="grid-template-columns:300px 1fr;gap:18px">
+    <div class="stack">
+      <div class="card" style="text-align:center"><h3>OEE geral</h3><div class="sub">fábrica · acumulado da semana</div>
+        <div class="gauge"><canvas id="d1g"></canvas><div class="lbl"><b>78,4%</b><span>meta 85%</span></div></div>
+      </div>
+      ${kpi('Peças produzidas','412 mil','▲ vs. semana ant.','up')}
+      ${kpi('Refugo','3,1%','meta &lt; 2,5%','down')}
+    </div>
+    <div class="card"><h3>Heatmap · centro × dia</h3><div class="sub">OEE (%) por centro de trabalho</div>
+      <div class="heat">${rows}</div>
+      <div class="heatleg"><span><span class="sw c1"></span>Alto (85%+)</span><span><span class="sw c2"></span>Bom</span><span><span class="sw c3"></span>Baixo</span><span><span class="sw c4"></span>Crítico</span></div>
+    </div>
+  </div>
+  <div class="grid g2" style="margin-top:18px">
+   <div class="card"><h3>Composição do OEE</h3><div class="sub">disponibilidade × performance × qualidade</div><div class="chartbox sm"><canvas id="d1t"></canvas></div></div>
+   <div class="card"><h3>Centros em alerta</h3><div class="sub">maiores perdas de OEE</div>
+     <table><thead><tr><th>Centro</th><th>Máquina</th><th>OEE</th><th>Maior perda</th><th>Status</th></tr></thead><tbody>
+       <tr><td>Serigrafia</td><td>SER-01</td><td>58%</td><td>Setup</td><td><span class="badge b-bad">Crítico</span></td></tr>
+       <tr><td>Injeção B</td><td>INJ-04</td><td>69%</td><td>Troca de molde</td><td><span class="badge b-warn">Baixo</span></td></tr>
+       <tr><td>Acabamento</td><td>ACB-02</td><td>69%</td><td>Refugo</td><td><span class="badge b-warn">Baixo</span></td></tr>
+       <tr><td>Montagem</td><td>MON-03</td><td>78%</td><td>Performance</td><td><span class="badge b-info">Atenção</span></td></tr>
+     </tbody></table>
+   </div>
+  </div>`;
+}
+
+/* ================= DASH 2 — CARTEIRA & OTD ================= */
+function dash2(){
+ const stages=[['Carteira (pedidos)',520,'#aab2bf'],['Em produção',310,'#7c8696'],['Inspeção/Qualidade',180,'#5a6577'],['Expedido',150,'#323845'],['Entregue no prazo',142,'#1fae6a']];
+ const max=520;
+ const fun=stages.map(s=>{const w=42+(s[1]/max)*58;return `<div class="fstage" style="width:${w}%;background:linear-gradient(135deg,${s[2]},${s[2]}cc)"><span><small>${s[0]}</small></span><b>${s[1]} OP</b></div>`;}).join('');
+ setTimeout(()=>{
+  C('d2c',{type:'bar',data:{labels:['Marcopolo','Mercedes','Randon','AGCO','DAF','Outros'],datasets:[{label:'OTD %',data:[97,95,92,96,90,94],backgroundColor:'#5a6577',borderRadius:4}]},options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{max:100}}}});
+ },40);
+ return `<span class="dashtag">VISUALIZAÇÃO · Funil da carteira até a entrega</span>
+  <p class="lead">A carteira de pedidos como um <b>funil</b> — do pedido à entrega no prazo — com o OTD por cliente e alertas de risco. Dá previsibilidade de entrega às montadoras (que exigem pontualidade) e mostra onde a OP atrasa.</p>
+  <div class="grid g4" style="margin-bottom:18px">
+   ${kpi('Carteira aberta','520 OP','R$ 14,8 mi','flat')}
+   ${kpi('OTD geral','96,2%','▲ 1,4 p.p.','up')}
+   ${kpi('Lead time médio','11 dias','▼ de 13 dias','up')}
+   ${kpi('OPs em risco','8','priorizar','down')}
+  </div>
+  <div class="grid" style="grid-template-columns:1.05fr 1fr;gap:18px">
+    <div class="card"><h3>Funil da carteira (ordens de produção)</h3><div class="sub">do pedido à entrega no prazo</div>
+      <div class="funnel">${fun}</div>
+      <div class="note" style="margin-top:10px">Maior perda entre <b>Carteira → Em produção</b> — capacidade nas injetoras é o gargalo.</div>
+    </div>
+    <div class="card"><h3>OTD por cliente</h3><div class="sub">entrega no prazo · %</div><div class="chartbox"><canvas id="d2c"></canvas></div></div>
+  </div>
+  <div class="card" style="margin-top:18px"><h3>OPs em risco de atraso</h3><div class="sub">foco de PCP e expedição</div>
+    <table><thead><tr><th>OP</th><th>Cliente</th><th>Produto</th><th>Prazo</th><th>Causa</th><th>Status</th></tr></thead><tbody>
+      <tr><td>5590</td><td>DAF</td><td>Peça injetada</td><td>2 dias</td><td>INJ-04 parada</td><td><span class="badge b-bad">Risco alto</span></td></tr>
+      <tr><td>5586</td><td>Randon</td><td>Contentor</td><td>3 dias</td><td>Molde em manutenção</td><td><span class="badge b-warn">Atenção</span></td></tr>
+      <tr><td>5583</td><td>Marcopolo</td><td>Vacuum forming</td><td>4 dias</td><td>Aprovação de setup</td><td><span class="badge b-warn">Atenção</span></td></tr>
+      <tr><td>5582</td><td>Marcopolo</td><td>Painel injetado</td><td>5 dias</td><td>—</td><td><span class="badge b-ok">No prazo</span></td></tr>
+    </tbody></table>
+  </div>`;
+}
+
+/* ================= DASH 3 — PCP / PROGRAMAÇÃO ================= */
+function dash3(){
+ const card=(c,t,m,who,foot)=>`<div class="kcard ${c}"><div class="kt">${t}</div><div class="km">${m}</div><div class="kf"><span>${foot}</span><span class="av">${who}</span></div></div>`;
+ return `<span class="dashtag">VISUALIZAÇÃO · Kanban da programação fabril</span>
+  <p class="lead">O PCP como um <b>quadro Kanban</b>: cada Ordem de Produção percorre as colunas até concluir. O programador equilibra a carga das injetoras, vê os setups (troca de molde) e antecipa gargalos.</p>
+  <div class="grid g4" style="margin-bottom:18px">
+   ${kpi('OPs na semana','86','412 mil peças','flat')}
+   ${kpi('Em setup agora','5','troca de molde','flat')}
+   ${kpi('Máquinas ativas','18','injeção + VF','flat')}
+   ${kpi('OPs atrasadas','4','priorizar','down')}
+  </div>
+  <div class="card"><h3>Programação de produção · semana</h3><div class="sub">arraste-e-solte (conceito) · 86 OPs</div>
+   <div class="kanban">
+     <div class="kcol"><div class="kh"><span><span class="kdot" style="background:#aab2bf"></span>Programada</span><span class="cnt">28</span></div>
+       ${card('','OP-5590 · DAF','Peça injetada · M-204','RM','INJ-04')}
+       ${card('','OP-5588 · Marcopolo','Painel · M-118','CA','INJ-02')}
+     </div>
+     <div class="kcol"><div class="kh"><span><span class="kdot" style="background:#f5a524"></span>Setup (molde)</span><span class="cnt">5</span></div>
+       ${card('wn','OP-5586 · Randon','Contentor · troca M-090','ET','—')}
+     </div>
+     <div class="kcol"><div class="kh"><span><span class="kdot" style="background:#5a6577"></span>Produzindo</span><span class="cnt">12</span></div>
+       ${card('','OP-5582 · Marcopolo','77% · INJ-02','RM','no prazo')}
+       ${card('wn','OP-5583 · Mercedes','VF-01 · aguardando','ET','aprovar')}
+     </div>
+     <div class="kcol"><div class="kh"><span><span class="kdot" style="background:#323845"></span>Inspeção</span><span class="cnt">9</span></div>
+       ${card('','OP-5578 · AGCO','controle dimensional','CA','IATF')}
+     </div>
+     <div class="kcol"><div class="kh"><span><span class="kdot" style="background:#1fae6a"></span>Concluída</span><span class="cnt">32</span></div>
+       ${card('ok','OP-5570 · Marcopolo','expedida','ET','✓')}
+     </div>
+   </div>
+  </div>
+  <div class="card" style="margin-top:18px"><h3>Gargalos da semana</h3><div class="sub">capacidade e setup</div>
+    <table><thead><tr><th>Recurso</th><th>Carga</th><th>Setups</th><th>Status</th></tr></thead><tbody>
+      <tr><td>Injeção B (INJ-04/05/06)</td><td>112%</td><td>9</td><td><span class="badge b-bad">Sobrecarga</span></td></tr>
+      <tr><td>Vacuum Forming</td><td>94%</td><td>4</td><td><span class="badge b-warn">Quase cheio</span></td></tr>
+      <tr><td>Injeção A</td><td>82%</td><td>6</td><td><span class="badge b-ok">Folga</span></td></tr>
+    </tbody></table>
+  </div>`;
+}
+
+/* ================= DASH 4 — CUSTO & MARGEM ================= */
+function dash4(){
+ setTimeout(()=>{
+  C('d4w',{type:'bar',data:{labels:['Receita','Resina/MP','Energia','M. de obra','Frete','Margem'],datasets:[{
+    data:[[0,100],[62,100],[52,62],[42,52],[36,42],[0,36]],
+    backgroundColor:['#323845','#ed2e2e','#f5a524','#f5a524','#f5a524','#1fae6a'],borderRadius:4}]},
+    options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'índice '+c.raw[0]+'→'+c.raw[1]}}},scales:{x:{grid:{display:false}},y:{title:{display:true,text:'índice (receita=100)'}}}}});
+  C('d4mix',{type:'polarArea',data:{labels:['Peças Ônibus/Vans','Indústria Plásticos','Contentores','Mobiliário','Artigos de Viagem'],datasets:[{data:[34,26,18,12,10],backgroundColor:acr.slice(0,5)}]},options:{plugins:{legend:{position:'right'}},scales:{r:{ticks:{display:false}}}}});
+ },40);
+ return `<span class="dashtag">VISUALIZAÇÃO · Waterfall de margem + mix</span>
+  <p class="lead">Da receita ao resultado em <b>cascata (waterfall)</b>, com a margem e o mix de receita por linha de negócio. Mostra como resina, energia e mão de obra formam o custo — e qual linha puxa o resultado.</p>
+  <div class="grid g4" style="margin-bottom:18px">
+   ${kpi('Margem bruta','36,2%','▲ 0,8 p.p.','up')}
+   ${kpi('Custo da resina','38% da receita','▲ câmbio','down')}
+   ${kpi('Linha + rentável','Peças Ônibus','margem 41%','flat')}
+   ${kpi('Linha a melhorar','Mobiliário','margem 27%','down')}
+  </div>
+  <div class="grid g2">
+   <div class="card"><h3>Da receita ao resultado</h3><div class="sub">composição do custo (índice)</div><div class="chartbox"><canvas id="d4w"></canvas></div></div>
+   <div class="card"><h3>Mix de receita por linha</h3><div class="sub">participação % · gráfico polar</div><div class="chartbox"><canvas id="d4mix"></canvas></div></div>
+  </div>
+  <div class="card" style="margin-top:18px"><h3>Rentabilidade por linha de negócio</h3><div class="sub">receita, margem e tendência</div>
+    <table><thead><tr><th>Linha</th><th>Receita (mês)</th><th>Margem</th><th>Mix</th><th>Status</th></tr></thead><tbody>
+      <tr><td>Peças Ônibus / Vans</td><td>R$ 5,0 mi</td><td>41%</td><td>34%</td><td><span class="badge b-ok">Destaque</span></td></tr>
+      <tr><td>Indústria de Plásticos (acrílico)</td><td>R$ 3,8 mi</td><td>38%</td><td>26%</td><td><span class="badge b-ok">Estável</span></td></tr>
+      <tr><td>Contentores</td><td>R$ 2,6 mi</td><td>34%</td><td>18%</td><td><span class="badge b-ok">Crescendo</span></td></tr>
+      <tr><td>Mobiliário</td><td>R$ 1,8 mi</td><td>27%</td><td>12%</td><td><span class="badge b-warn">Melhorar</span></td></tr>
+      <tr><td>Artigos de Viagem</td><td>R$ 1,5 mi</td><td>30%</td><td>10%</td><td><span class="badge b-warn">Atenção</span></td></tr>
+    </tbody></table>
+  </div>`;
+}
+
+/* ================= DASH 5 — EXECUTIVO & QUALIDADE ================= */
+function dash5(){
+ const ring=(v,color,nm,suf,dl,dcls)=>`<div class="ring"><div class="circ" style="background:conic-gradient(${color} ${v*3.6}deg,#e5e8ed 0)"><b>${v}${suf}</b></div><div class="nm">${nm}</div><div class="dl ${dcls}">${dl}</div></div>`;
+ const sb=(arr)=>`<div class="spark">${arr.map(v=>`<i style="height:${v}%"></i>`).join('')}</div>`;
+ setTimeout(()=>{
+  C('d5rev',{type:'line',data:{labels:MES.slice(0,6),datasets:[{label:'Receita (R$ mi)',data:[12.8,13.4,13.9,14.2,14.6,14.8],borderColor:'#1b1e25',backgroundColor:'rgba(237,46,46,.10)',fill:true,tension:.4,borderWidth:3,pointRadius:0}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{display:false}}}}});
+  C('d5b',{type:'line',data:{labels:MES.slice(0,6),datasets:[
+    {label:'FPY %',data:[92,93,93.5,94,94.5,94.8],borderColor:'#1fae6a',tension:.35,borderWidth:3,pointRadius:0},
+    {label:'Refugo %',data:[4.2,3.9,3.6,3.4,3.2,3.1],borderColor:'#ed2e2e',tension:.35,borderWidth:3,pointRadius:0,yAxisID:'y2'}]},
+    options:{plugins:{legend:{position:'bottom'}},scales:{y2:{position:'right',grid:{drawOnChartArea:false}},x:{grid:{display:false}}}}});
+ },40);
+ return `<span class="dashtag">VISUALIZAÇÃO · Scorecard executivo & qualidade (IATF)</span>
+  <p class="lead">Visão de diretoria: os indicadores que sustentam a fábrica — OEE, FPY (1ª passada), OTD e refugo — em anéis, com receita e a evolução de qualidade (FPY × refugo). Pronto para reunião e para auditoria IATF.</p>
+  <div class="card"><h3>Indicadores estratégicos</h3><div class="sub">desempenho vs. meta</div>
+    <div class="rings">
+      ${ring(78,'#ed2e2e','OEE','%','meta 85% · ▲','up')}
+      ${ring(95,'#1fae6a','FPY','%','▲ 1ª passada','up')}
+      ${ring(96,'#5a6577','OTD','%','▲ no prazo','up')}
+      ${ring(97,'#323845','Conformidade','%','IATF/ISO','up')}
+    </div>
+  </div>
+  <div class="grid g4" style="margin:18px 0">
+   ${kpi('Receita (mês)','R$ 14,8 mi','▲ 10% YoY','up')}
+   ${kpi('Resultado','R$ 5,4 mi','margem 36%','up')}
+   ${kpi('Peças/mês','412 mil','5 linhas','flat')}
+   ${kpi('Refugo','3,1%','▼ melhorando','up')}
+  </div>
+  <div class="grid g2">
+    <div class="card"><h3>Receita</h3><div class="sub">evolução semestral</div><div class="chartbox sm"><canvas id="d5rev"></canvas></div></div>
+    <div class="card"><h3>Qualidade · FPY × Refugo</h3><div class="sub">primeira passada sobe, refugo cai</div><div class="chartbox sm"><canvas id="d5b"></canvas></div></div>
+  </div>
+  <div class="card" style="margin-top:18px"><h3>Scorecard por área</h3><div class="sub">desempenho e mini-tendência (6 meses)</div>
+   <table class="scoretab"><thead><tr><th>Área</th><th>Indicador</th><th>Atual</th><th>Meta</th><th>Tendência</th><th>Status</th></tr></thead><tbody>
+     <tr><td>Produção</td><td>OEE</td><td>78,4%</td><td>85%</td><td>${sb([66,68,72,74,76,78])}</td><td><span class="trend-up">▲ subindo</span></td></tr>
+     <tr><td>Qualidade</td><td>FPY</td><td>94,8%</td><td>96%</td><td>${sb([78,82,84,88,92,94])}</td><td><span class="trend-up">▲ perto</span></td></tr>
+     <tr><td>Logística</td><td>OTD</td><td>96,2%</td><td>97%</td><td>${sb([84,86,88,90,94,96])}</td><td><span class="trend-up">▲ perto</span></td></tr>
+     <tr><td>Suprimentos</td><td>Refugo</td><td>3,1%</td><td>2,5%</td><td>${sb([62,58,54,50,46,42])}</td><td><span class="trend-up">▲ melhora</span></td></tr>
+     <tr><td>Controladoria</td><td>Margem</td><td>36,2%</td><td>35%</td><td>${sb([72,74,76,80,82,86])}</td><td><span class="trend-up">▲ acima</span></td></tr>
+   </tbody></table>
+  </div>`;
+}
+
+/* ================= POWER PLATFORM ================= */
+function archDiagram(){
+ return `<div class="card"><h3>Arquitetura integrada — Microsoft Power Platform</h3><div class="sub">tudo no Dataverse e no Microsoft 365 que a Acrilys já usa</div>
+  <div class="flow">
+    <div class="step"><div class="si">📱</div><div class="sn">Power Apps</div><div class="sd">Apontamento & aprovações</div></div>
+    <div class="arrow">➜</div>
+    <div class="step" style="border-color:var(--green);box-shadow:0 0 0 2px var(--ring)"><div class="si">🗄️</div><div class="sn">Dataverse</div><div class="sd">Base única governada</div></div>
+    <div class="arrow">➜</div>
+    <div class="step"><div class="si">⚡</div><div class="sn">Power Automate</div><div class="sd">Fechamento · alertas · OTD</div></div>
+    <div class="arrow">➜</div>
+    <div class="step"><div class="si">📊</div><div class="sn">Power BI</div><div class="sd">5 painéis</div></div>
+  </div>
+  <div class="flow" style="margin-top:14px">
+    <div class="step"><div class="si">🌐</div><div class="sn">Power Pages</div><div class="sd">Portal do cliente</div></div>
+    <div class="arrow">➜</div>
+    <div class="step"><div class="si">💬</div><div class="sn">Copilot Studio</div><div class="sd">Copiloto industrial</div></div>
+    <div class="arrow">➜</div>
+    <div class="step"><div class="si">🟦</div><div class="sn">Microsoft 365</div><div class="sd">Teams · SharePoint · Outlook</div></div>
+    <div class="arrow">➜</div>
+    <div class="step"><div class="si">🔐</div><div class="sn">Entra ID</div><div class="sd">Segurança & governança</div></div>
+  </div>
+  <div class="archlegend"><span><span class="dot" style="background:var(--green)"></span>Base de dados</span><span><span class="dot" style="background:var(--blue-500)"></span>Aplicação & automação</span><span><span class="dot" style="background:var(--blue-300)"></span>Experiência</span><span>Fontes: ERP · MES/apontamento · telemetria das injetoras · laboratório/qualidade · ferramentaria</span></div>
+ </div>`;
+}
+function pp1(){
+ return `<p class="lead">App canvas no <b>Power Apps</b> sobre o Dataverse para o <b>operador apontar produção, refugo e parada de máquina</b> direto no chão de fábrica — em tablet, inclusive offline. Acaba com o apontamento em papel e alimenta o OEE em tempo real.</p>
+  <div class="grid g2">
+   <div class="card"><h3>Tela do app (Power Apps)</h3><div class="sub">apontamento de chão de fábrica · tablet/Teams</div>
+     <div style="background:#f6f7f9;border:1px solid var(--line);border-radius:14px;padding:14px">
+       <div class="row" style="margin-bottom:10px"><b style="font-size:13px">⏱️ Apontamento · INJ-02</b><span class="badge b-info">Produzindo</span></div>
+       <div class="mini"><div class="row"><div class="mt">Ordem de produção</div><span class="ms">OP-5582 · molde M-118</span></div></div>
+       <div class="mini"><div class="row"><div class="mt">Peças boas</div><span class="ms">1.842</span></div></div>
+       <div class="mini"><div class="row"><div class="mt">Refugo (motivo)</div><span class="ms">61 · rebarba</span></div></div>
+       <div class="btn acc full" style="margin-top:8px">Registrar → Dataverse</div>
+     </div>
+   </div>
+   <div class="card stack"><h3>Por que Power Apps</h3>
+     <div class="feat"><div class="fi">💳</div><div><b>Custo baixo</b><br><span class="note">Aproveita o licenciamento Microsoft 365 já existente.</span></div></div>
+     <div class="feat"><div class="fi">📴</div><div><b>Offline nativo</b><br><span class="note">Aponta no chão de fábrica sem depender de rede e sincroniza.</span></div></div>
+     <div class="feat"><div class="fi">✔️</div><div><b>Dados na origem</b><div class="note">Peças boas, refugo por motivo e paradas alimentam o OEE na hora.</div></div></div>
+     <div class="feat"><div class="fi">🧩</div><div><b>Conectores prontos</b><br><span class="note">ERP, MES, SharePoint e +900 conectores.</span></div></div>
+   </div>
+  </div>
+  <div style="margin-top:18px">${archDiagram()}</div>`;
+}
+function pp2(){
+ return `<p class="lead">Fluxo no <b>Power Automate</b> que <b>consolida o fechamento fabril</b>: produção, refugo, custo (resina/energia/MO) e OEE — coletando do ERP e do apontamento, com aprovação e publicação. Menos dias de fechamento e um número confiável por linha.</p>
+  <div class="card"><h3>Fluxo: fechamento fabril mensal</h3><div class="sub">produção, custo e eficiência</div>
+   <div class="flow">
+     <div class="step"><div class="si">🔄</div><div class="sn">Coleta</div><div class="sd">ERP · MES · energia</div></div>
+     <div class="arrow">➜</div>
+     <div class="step"><div class="si">🧮</div><div class="sn">Calcula</div><div class="sd">Custo/peça · OEE</div></div>
+     <div class="arrow">➜</div>
+     <div class="step"><div class="si">📐</div><div class="sn">Rateios</div><div class="sd">Por linha/centro</div></div>
+     <div class="arrow">➜</div>
+     <div class="step"><div class="si">🖊️</div><div class="sn">Aprovação</div><div class="sd">Controladoria (Teams)</div></div>
+     <div class="arrow">➜</div>
+     <div class="step"><div class="si">📊</div><div class="sn">Publica</div><div class="sd">Painéis no Power BI</div></div>
+   </div>
+  </div>
+  <div class="grid g2" style="margin-top:18px">
+    <div class="card"><h3>Aprovação no Teams</h3><div class="sub">card adaptativo</div>
+      <div style="background:#f6f7f9;border:1px solid var(--line);border-radius:14px;padding:14px">
+        <b style="font-size:13px">📊 Fechamento fabril de Mai pronto</b>
+        <div class="note" style="margin:8px 0">Receita R$ 14,8 mi · margem 36% · OEE 78,4% · refugo 3,1% · 0 pendências</div>
+        <div class="row"><span class="btn acc" style="flex:1;margin-right:6px">Aprovar e publicar</span><span class="btn" style="flex:1;background:linear-gradient(135deg,#c41f1f,#9c1717)">Revisar</span></div>
+      </div>
+    </div>
+    <div class="card stack"><h3>Ganhos</h3>
+      <div class="feat"><div class="fi">⏱️</div><div><b>De D+6 para D+2</b> no fechamento fabril.</div></div>
+      <div class="feat"><div class="fi">🧮</div><div><b>Custo por peça e por linha</b> confiável, sem planilha.</div></div>
+      <div class="feat"><div class="fi">🔎</div><div><b>Trilha de auditoria</b> (apoia IATF/ISO).</div></div>
+    </div>
+  </div>`;
+}
+function pp3(){
+ return `<p class="lead">Robôs no <b>Power Automate</b> que vigiam a fábrica e <b>alertam sobre OEE baixo, refugo acima da meta e parada de máquina</b> — em tempo real, direto no Teams. Reduz tempo de reação e perda de produção.</p>
+  <div class="card"><h3>Fluxo: alertas de produção & qualidade</h3><div class="sub">monitoramento contínuo</div>
+   <div class="flow">
+     <div class="step"><div class="si">📡</div><div class="sn">Evento</div><div class="sd">Máquina / apontamento</div></div>
+     <div class="arrow">➜</div>
+     <div class="step"><div class="si">🔍</div><div class="sn">Avalia</div><div class="sd">OEE · refugo · parada</div></div>
+     <div class="arrow">➜</div>
+     <div class="step"><div class="si">🧾</div><div class="sn">Tarefa</div><div class="sd">Manutenção/qualidade</div></div>
+     <div class="arrow">➜</div>
+     <div class="step"><div class="si">🔔</div><div class="sn">Notifica</div><div class="sd">Líder (Teams)</div></div>
+   </div>
+  </div>
+  <div class="grid g2" style="margin-top:18px">
+    <div class="card"><h3>Alerta gerado</h3><div class="sub">exemplo · em tempo real</div>
+      <div class="callout" style="margin:0">🔔 <b>Atenção no chão de fábrica</b><br>• INJ-04 parada há <b>38 min</b> (troca de molde) — OEE do dia em risco<br>• Refugo da OP-5582 em <b>3,3%</b> (rebarba) — verificar molde M-118<br>• Manutenção preventiva do molde M-090 vencendo<br><span class="note">Tarefas atribuídas a: Manutenção e Qualidade</span></div>
+    </div>
+    <div class="card stack"><h3>Impacto</h3>
+      <div class="feat"><div class="fi">⚡</div><div><b>Reação imediata</b> a parada e refugo.</div></div>
+      <div class="feat"><div class="fi">📈</div><div><b>OEE sobe</b> com menos tempo perdido.</div></div>
+      <div class="feat"><div class="fi">🛠️</div><div><b>Manutenção de molde</b> no momento certo.</div></div>
+    </div>
+  </div>`;
+}
+function pp4(){
+ return `<p class="lead">Fluxo no <b>Power Automate</b> para <b>acompanhar pedidos e OTD</b>: status da OP, marcos (programação, produção, inspeção, expedição), alerta de risco de atraso e atualização automática do portal do cliente. Pontualidade que as montadoras exigem.</p>
+  <div class="card"><h3>Fluxo: acompanhamento de pedidos & OTD</h3><div class="sub">do pedido à entrega no prazo</div>
+   <div class="flow">
+     <div class="step"><div class="si">📥</div><div class="sn">Pedido</div><div class="sd">ERP · PPAP</div></div>
+     <div class="arrow">➜</div>
+     <div class="step"><div class="si">🏭</div><div class="sn">Marcos</div><div class="sd">Produção · inspeção</div></div>
+     <div class="arrow">➜</div>
+     <div class="step"><div class="si">⏳</div><div class="sn">Risco de atraso</div><div class="sd">Alerta automático</div></div>
+     <div class="arrow">➜</div>
+     <div class="step"><div class="si">🚚</div><div class="sn">Expedição</div><div class="sd">NF + certificado</div></div>
+     <div class="arrow">➜</div>
+     <div class="step"><div class="si">🌐</div><div class="sn">Portal</div><div class="sd">Atualiza cliente</div></div>
+   </div>
+  </div>
+  <div class="grid g2" style="margin-top:18px">
+    <div class="card"><h3>Alerta gerado</h3><div class="sub">exemplo</div>
+      <div class="callout" style="margin:0">📦 <b>OP-5590 (DAF) em risco de atraso</b><br>Etapa: produção · prazo em <b>2 dias</b><br>⚠️ INJ-04 parada — capacidade comprometida<br><span class="note">PCP e comercial notificados · plano B em INJ-01 avaliado.</span></div>
+    </div>
+    <div class="card stack"><h3>Impacto</h3>
+      <div class="feat"><div class="fi">🎯</div><div><b>OTD protegido</b> com alerta antecipado.</div></div>
+      <div class="feat"><div class="fi">🤝</div><div><b>Cliente informado</b> automaticamente no portal.</div></div>
+      <div class="feat"><div class="fi">🔗</div><div><b>Integrado</b> ao painel de carteira e ao portal.</div></div>
+    </div>
+  </div>`;
+}
+function pp5(){
+ return `<p class="lead">Agente no <b>Copilot Studio</b> (no Teams) que responde sobre produção, qualidade, pedidos e margem — consultando os dados da fábrica em linguagem natural, com governança por área e por permissão do usuário.</p>
+  <div class="grid g2">
+   <div class="card"><h3>Copiloto Industrial</h3><div class="sub">plugado no Dataverse + Power BI</div>
+     <div style="background:#f6f7f9;border:1px solid var(--line);border-radius:14px;padding:14px;font-size:13px">
+       <div style="text-align:right;margin-bottom:10px"><span style="display:inline-block;background:linear-gradient(135deg,var(--navy-700),var(--navy-600));color:#fff;padding:9px 13px;border-radius:14px 14px 3px 14px;max-width:82%">Qual máquina está puxando o OEE para baixo hoje?</span></div>
+       <div style="margin-bottom:12px"><span style="display:inline-block;background:#fff;border:1px solid var(--line);padding:9px 13px;border-radius:14px 14px 14px 3px;max-width:86%">A <b>INJ-04</b> (Injeção B), com OEE de <b>69%</b> — parada de 38 min em troca de molde. A serigrafia (SER-01) também está baixa (58%). Quer que eu abra um chamado de manutenção?</span></div>
+       <div style="text-align:right;margin-bottom:10px"><span style="display:inline-block;background:linear-gradient(135deg,var(--navy-700),var(--navy-600));color:#fff;padding:9px 13px;border-radius:14px 14px 3px 14px">Algum pedido da Marcopolo em risco?</span></div>
+       <div><span style="display:inline-block;background:#fff;border:1px solid var(--line);padding:9px 13px;border-radius:14px 14px 14px 3px;max-width:86%">A <b>OP-5583</b> (vacuum forming) está aguardando aprovação de setup — risco de atraso em 4 dias. As demais estão no prazo. <span class="note">[fonte: painel Carteira & OTD]</span></span></div>
+     </div>
+   </div>
+   <div class="card stack"><h3>Capacidades</h3>
+     <div class="feat"><div class="fi">📊</div><div><b>Pergunta em linguagem natural</b> sobre OEE, refugo, OTD e margem.</div></div>
+     <div class="feat"><div class="fi">⚙️</div><div><b>Ações</b>: abre chamado e dispara fluxos do Power Automate.</div></div>
+     <div class="feat"><div class="fi">🔐</div><div><b>Governança</b>: responde conforme a área e a permissão do usuário.</div></div>
+     <div class="feat"><div class="fi">🟦</div><div><b>Onde a equipe já está</b>: dentro do Teams.</div></div>
+   </div>
+  </div>
+  <div style="margin-top:18px">${archDiagram()}</div>`;
+}
+
+/* ================= HOME ================= */
+function home(){
+ return `<div class="hero">
+   <div style="display:inline-flex;align-items:center;gap:14px;margin-bottom:16px">
+     <span style="display:inline-flex;align-items:center"><svg width="172" height="41" viewBox="0 0 200 48" xmlns="http://www.w3.org/2000/svg"><text x="0" y="36" font-family="Manrope,Arial" font-weight="800" font-size="36" fill="#ffffff" letter-spacing="-1.5">Acrilys</text><circle cx="185" cy="32" r="7" fill="#ed2e2e"/></svg></span>
+     <span style="font-size:12px;font-weight:600;color:#c2c8d2;letter-spacing:.05em">PRODUÇÃO · OEE · QUALIDADE (IATF) · OTD · BI &amp; AUTOMAÇÃO</span>
+   </div>
+   <h1>Portfólio de Provas de Conceito — Acrilys</h1>
+   <p>Sejam muito bem-vindos. Preparamos um conjunto de <b style="color:#fff">15 provas de conceito</b> sob medida para a Acrilys, organizadas em três frentes que conversam entre si numa única plataforma sobre o Microsoft 365: aplicativos, dashboards em Power BI e automações em Power Platform. Vamos navegar por cada uma para mostrar, na prática, como dar visão única do chão de fábrica ao cliente — destravando OEE e produção, carteira e OTD, programação fabril, qualidade (IATF) e margem — saindo da planilha e com governança. Os números são ilustrativos, apenas para dar vida às demonstrações.</p>
+   <div class="chips"><span>📱 5 Aplicativos</span><span>📊 5 Dashboards</span><span>⚡ 5 Power Platform</span><span>🗄️ Base única: Dataverse</span></div>
+ </div>
+  <div class="grid g3">
+   <div class="card"><h3>📱 5 Aplicativos</h3><div class="sub">experiências mobile/portal</div><div class="note">Cockpit da diretoria (com mapa das unidades), portal do cliente (montadoras), apontamento de chão de fábrica, capacitação gamificada e inspeção visual com IA.</div></div>
+   <div class="card"><h3>📊 5 Dashboards (Power BI)</h3><div class="sub">cada um com uma visualização diferente</div><div class="note">Produção & OEE, carteira & OTD, PCP/programação, custo & margem por linha e o executivo com qualidade (IATF).</div></div>
+   <div class="card"><h3>⚡ 5 Power Platform</h3><div class="sub">automação com governança</div><div class="note">Apontamento no chão de fábrica, fechamento fabril, alertas de produção & qualidade, pedidos & OTD e o copiloto industrial.</div></div>
+  </div>
+  <div class="grid g4" style="margin-top:22px">
+   ${kpi('Linhas de negócio','5','+ 3 unidades no RS','flat')}
+   ${kpi('POCs','15','navegáveis','flat')}
+   ${kpi('Base','Microsoft 365','que a Acrilys já usa','flat')}
+   ${kpi('Dados','Dataverse','fonte única governada','flat')}
+  </div>
+  <div style="margin-top:24px">${archDiagram()}</div>`;
+}
+
+/* ================= router ================= */
+const VIEWS={app1,app2,app3,app4,app5,dash1,dash2,dash3,dash4,dash5,pp1,pp2,pp3,pp4,pp5};
+function go(id){
+  destroyCharts();
+  const m=meta(id);
+  document.getElementById('crumb').textContent=m?m.crumb:'Início';
+  document.getElementById('title').textContent=m?(m.ico+' '+m.name):'Portfólio de POCs — Acrilys';
+  document.getElementById('pocflag').textContent=m?'Prova de conceito':'15 provas de conceito';
+  const v=document.getElementById('view');
+  v.style.animation='none';void v.offsetWidth;v.style.animation='';
+  v.innerHTML=(VIEWS[id]||home)();
+  setActive(id);window.scrollTo(0,0);
+}
+buildNav();
+document.getElementById('view').innerHTML=home();
+</script>
+</body>
+</html>
