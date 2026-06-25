@@ -4,4 +4,4 @@ Prototipo navegavel com 15 provas de conceito (aplicativos, dashboards Power BI 
 
 Acesse a demonstracao: https://power-application.github.io/acrilys-pocs/
 
-Dados ilustrativos. Por Power Tech.
+Dados ilustrativos. Por Power Tech. Versao modernizada.
